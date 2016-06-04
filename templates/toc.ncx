@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ncx version="2005-1" xml:lang="en" xmlns="http://www.daisy.org/z3986/2005/ncx/">
+    <head>
+        <meta name="dtb:uid" content="isbn"/>
+        <meta name="dtb:depth" content="1"/>
+    </head>
+    <docTitle>
+        <text>{{ title }}</text>
+    </docTitle>
+    <navMap>
+        {% for chapter in chapters %}
+        <navPoint id="navpoint-{{ chapter.order_id }}" playOrder="{{ chapter.play_order }}">
+            <navLabel><text>{{ chapter.title }}</text></navLabel>
+            <content src="xhtml/{{ chapter.order_id }}.xhtml" />
+        </navPoint>
+        {% endfor %}
+    </navMap>
+</ncx>

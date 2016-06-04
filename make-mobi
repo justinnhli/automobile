@@ -1,0 +1,9 @@
+#!/bin/sh
+
+dirname="$1"
+epub="$(basename "$dirname").epub"
+cd "$dirname"
+zip -0Xq "../$epub" mimetype
+zip -Xr9Dq "../$epub" *
+cd ..
+kindlegen "magazine.epub"
