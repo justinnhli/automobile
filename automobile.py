@@ -10,7 +10,7 @@ from os.path import dirname, exists as file_exists, expanduser, join as join_pat
 from shutil import copy, copytree
 from subprocess import run
 from tempfile import TemporaryDirectory
-from urllib.parse import urlsplit, urlunsplit, parse_qs, urlencode
+from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 import requests
 from bs4 import BeautifulSoup
@@ -19,7 +19,7 @@ from jinja2 import Environment, FileSystemLoader
 SRC_DIR = dirname(realpath(expanduser(__file__)))
 
 CACHE_FILE = join_path(SRC_DIR, 'article-cache')
-GET_PARAMETERS = (
+GET_PARAMETERS = set((
     '_r',
     'emc',
     'partner',
@@ -32,7 +32,7 @@ GET_PARAMETERS = (
     'utm_medium',
     'utm_source',
     'utm_term',
-)
+))
 
 MOBI_SCRIPT = join_path(SRC_DIR, 'make-mobi')
 TEMPLATES_ROOT = join_path(SRC_DIR, 'templates')
@@ -56,11 +56,7 @@ def load_cache():
 
 def clean_url(url):
     scheme, netloc, path, query, fragment = urlsplit(url)
-    query = parse_qs(query)
-    for param in GET_PARAMETERS:
-        if param in query:
-            del query[param]
-    query = urlencode(sorted(query.items()), doseq=True)
+    query = urlencode(sorted((k, v) for k, v in parse_qsl(query) if k not in GET_PARAMETERS), doseq=True)
     url = urlunsplit((scheme, netloc, path, query, fragment))
     return url
 
