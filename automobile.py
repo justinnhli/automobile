@@ -117,21 +117,29 @@ def get_articles(urls_file):
     save_cache(cache)
     return articles
 
-def make_magazine(articles):
+def make_magazine(articles, title=None):
     now = datetime.now()
     context = {
-        'title': 'Article Collection {}'.format(now.strftime("%Y-%m-%d %H:%M:%S")),
-        'identifier': 'justinnhli.com/articles/{}'.format(now.strftime("%Y%m%d%H%M%S")),
+        'identifier': 'justinnhli.com/automobile/{}'.format(now.strftime("%Y%m%d%H%M%S")),
         'modified': now.isoformat(),
         'chapters': tuple(articles),
     }
+    if title is None:
+        context['title'] = 'Article Collection {}'.format(now.strftime("%Y-%m-%d %H:%M:%S")),
+    else:
+        context['title'] = title
     jinja_env = Environment(
         loader=FileSystemLoader(TEMPLATES_ROOT),
         trim_blocks=True,
         lstrip_blocks=True,
     )
     with TemporaryDirectory() as temp_dir:
-        mobi_name = 'magazine'
+        if title is None:
+            mobi_name = 'magazine'
+        else:
+            mobi_name = re.sub('[^0-9A-Za-z]', ' ', title)
+            mobi_name = re.sub(' +', ' ', mobi_name)
+            mobi_name = mobi_name.replace(' ', '-').lower()
         epub_dir = join_path(temp_dir, mobi_name)
         mkdir(epub_dir)
         copytree(join_path(TEMPLATES_ROOT, 'META-INF'), join_path(epub_dir, 'META-INF'))
@@ -159,9 +167,10 @@ def make_magazine(articles):
 def main():
     arg_parser = ArgumentParser()
     arg_parser.add_argument('file')
+    arg_parser.add_argument('--title')
     args = arg_parser.parse_args()
     articles = get_articles(realpath(expanduser(args.file)))
-    make_magazine(articles)
+    make_magazine(articles, title=args.title)
 
 if __name__ == '__main__':
     main()
