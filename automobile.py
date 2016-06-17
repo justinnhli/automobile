@@ -16,8 +16,6 @@ import requests
 from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
 
-# FIXME Pocket's API is at https://getpocket.com/developer/apps/
-
 SRC_DIR = dirname(realpath(expanduser(__file__)))
 
 CACHE_FILE = join_path(SRC_DIR, 'article-cache')
